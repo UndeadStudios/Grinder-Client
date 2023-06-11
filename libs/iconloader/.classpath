@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="iconloader-master/src"/>
+	<classpathentry kind="src" path="iconloader-master/tests"/>
+	<classpathentry kind="lib" path="iconloader-master/iconloader.jar"/>
+	<classpathentry kind="lib" path="iconloader-master/lib/annotations.jar"/>
+	<classpathentry kind="lib" path="iconloader-master/lib/eawtstub.jar"/>
+	<classpathentry kind="lib" path="iconloader-master/lib/junit-4.10.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

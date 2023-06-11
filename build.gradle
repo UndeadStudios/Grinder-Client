@@ -1,0 +1,103 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
+plugins {
+//    id "edu.sc.seis.macAppBundle" version "2.1.0"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+//    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+/*javafx {
+    version = "11.0.2"
+    modules = ["javafx.controls", "javafx.fxml", "javafx.swing", "javafx.web"]
+}*/
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.grinder.GrinderScape'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+dependencies {
+    compile files(fileTree(dir: 'libs', includes: ['*.jar']))
+    compile group: 'net.lingala.zip4j', name: 'zip4j', version: '1.3.2'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'commons-io:commons-io:2.6'
+    compile 'com.google.guava:guava:28.1-jre'
+    compile 'com.eclipsesource.minimal-json:minimal-json:0.9.5'
+    compile 'log4j:log4j:1.2.17'
+    compile 'club.minnced:java-discord-rpc:2.0.2'
+//    compile 'org.apache.commons:commons-compress:1.20'
+//    compile 'io.netty:netty-buffer:4.1.45.Final' <- causing obfuscation issue
+//    FATAL ERROR: Attempt to use "obfuscate" statement at line 43 with unusable classes : Class 'reactor.blockhound.BlockHound$Builder' not found while looking for method 'allowBlockingCallsInside(java.lang.String, java.lang.String)' in class 'reactor.blockhound.BlockHound$Builder' which is referenced in class 'S:\Github\GrinderScapeClient\build\libs\GrinderScape.jar!io/netty/util/internal/Hidden$NettyBlockHoundIntegration.class'. Check the classpath option and reopen classes. (1a)
+    testImplementation 'junit:junit:4.13'
+}
+
+test {
+    useJUnit()
+    maxHeapSize = '1G'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+application {
+    applicationDefaultJvmArgs = ['-Dgreeting.language=en']
+}
+jar {
+    manifest {
+        attributes(
+                'Main-Class': mainClassName,
+                'Permissions': 'all-permissions',
+                'Codebase': "https://www.grinderscape.org/",
+                'Application-Name': "GrinderScape"
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('GrinderScape')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+}
+
+
+task obfuscate(type: GradleBuild) {
+    tasks = ['shadowJar', 'runZKM', 'copyJar']
+}
+
+task jarOnly(type: GradleBuild) {
+    tasks = ['shadowJar']
+}
+
+
+task runZKM(type: JavaExec) {
+    main = "-jar"
+    args zkmJar, zkmScript
+}
+
+task copyJar(type: Copy) {
+    copy {
+        from zkmOut
+        into "GrinderScape"
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
